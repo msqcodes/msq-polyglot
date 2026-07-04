@@ -5,10 +5,23 @@ import { motion } from "framer-motion";
 import { Compass, LayoutDashboard } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
+import ProtectedRoute from "./ProtectedRoute";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+import CoursesPage from "../pages/CoursesPage";
+import LessonsPage from "../pages/LessonsPage";
+import LessonDetailsPage from "../pages/LessonDetailsPage";
+import GrammarPage from "../pages/GrammarPage";
+import FlashcardsPage from "../pages/FlashcardsPage";
+import QuizzesPage from "../pages/QuizzesPage";
+import VocabularyPage from "../pages/VocabularyPage";
+import ProfilePage from "../pages/ProfilePage";
+import SettingsPage from "../pages/SettingsPage";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import { ROUTES } from "../constants/routes";
 import { useLanguage } from "../context/LanguageContext";
+import { USER_ROLES } from "../context/AuthContext";
 
 const pageTransition = {
   initial: { opacity: 0, y: 12 },
@@ -98,20 +111,42 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path={ROUTES.HOME} element={<HomeRouteContent />} />
+        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         <Route path={ROUTES.NOT_FOUND} element={<NotFoundContent />} />
       </Route>
 
-      <Route element={<DashboardLayout role="student" />}>
-        <Route path={ROUTES.STUDENT_ROOT} element={<DashboardHomeContent />} />
-        <Route path={ROUTES.DASHBOARD} element={<Navigate to={ROUTES.STUDENT_ROOT} replace />} />
+      <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.STUDENT]} />}>
+        <Route element={<DashboardLayout role="student" />}>
+          <Route path={ROUTES.STUDENT_ROOT} element={<DashboardHomeContent />} />
+          <Route path={ROUTES.DASHBOARD} element={<Navigate to={ROUTES.STUDENT_ROOT} replace />} />
+        </Route>
       </Route>
 
-      <Route element={<DashboardLayout role="teacher" />}>
-        <Route path={ROUTES.TEACHER_ROOT} element={<DashboardHomeContent />} />
+      <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.TEACHER]} />}>
+        <Route element={<DashboardLayout role="teacher" />}>
+          <Route path={ROUTES.TEACHER_ROOT} element={<DashboardHomeContent />} />
+        </Route>
       </Route>
 
-      <Route element={<DashboardLayout role="admin" />}>
-        <Route path={ROUTES.ADMIN_ROOT} element={<DashboardHomeContent />} />
+      <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]} />}>
+        <Route element={<DashboardLayout role="admin" />}>
+          <Route path={ROUTES.ADMIN_ROOT} element={<DashboardHomeContent />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout role="student" />}>
+          <Route path={ROUTES.COURSES} element={<CoursesPage />} />
+          <Route path={ROUTES.LESSONS} element={<LessonsPage />} />
+          <Route path={ROUTES.LESSON_DETAILS} element={<LessonDetailsPage />} />
+          <Route path={ROUTES.GRAMMAR} element={<GrammarPage />} />
+          <Route path={ROUTES.FLASHCARDS} element={<FlashcardsPage />} />
+          <Route path={ROUTES.QUIZZES} element={<QuizzesPage />} />
+          <Route path={ROUTES.VOCABULARY} element={<VocabularyPage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+        </Route>
       </Route>
     </Routes>
   );

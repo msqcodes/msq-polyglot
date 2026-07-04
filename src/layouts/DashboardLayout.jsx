@@ -1,10 +1,12 @@
 // src/layouts/DashboardLayout.jsx
 
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { getNavLinksForRole } from "../constants/navigation";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+import { ROUTES } from "../constants/routes";
 
 const ROLE_LABELS = {
   student: "Student",
@@ -15,10 +17,26 @@ const ROLE_LABELS = {
 export default function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const navLinks = getNavLinksForRole(role);
   const roleLabel = ROLE_LABELS[role] ?? "Dashboard";
 
   const closeSidebar = () => setIsSidebarOpen(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate(ROUTES.HOME, { replace: true });
+  };
+
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "?";
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -36,7 +54,7 @@ export default function DashboardLayout({ role }) {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-bold text-white">
               MQ
@@ -52,6 +70,18 @@ export default function DashboardLayout({ role }) {
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
+
+        {user && (
+          <div className="mb-6 flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-caption font-semibold text-primary">
+              {initials}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-caption font-semibold text-slate-900">{user.name}</p>
+              <p className="truncate text-caption text-slate-500">{user.email}</p>
+            </div>
+          </div>
+        )}
 
         <nav aria-label={`${roleLabel} navigation`} className="flex flex-1 flex-col gap-1">
           {navLinks.map(({ label, path, icon: Icon }) => (
@@ -75,6 +105,7 @@ export default function DashboardLayout({ role }) {
 
         <button
           type="button"
+          onClick={handleLogout}
           className="flex items-center gap-3 rounded-md px-3 py-2 text-body font-medium text-slate-600 hover:bg-slate-100 hover:text-danger"
         >
           <LogOut className="h-5 w-5" aria-hidden="true" />
