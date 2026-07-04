@@ -1,34 +1,35 @@
 // src/pages/VocabularyPage.jsx
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
+
 import Input from "../components/ui/Input";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
+
 import { useLanguage } from "../context/LanguageContext";
-import { getContentForLanguage } from "../data/languageContent";
+import { vocabularyService } from "../features/vocabulary/services/vocabularyService";
 import { ROUTES } from "../constants/routes";
 
 export default function VocabularyPage() {
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const content = getContentForLanguage(language.id);
+
   const [query, setQuery] = useState("");
 
-  const filteredWords = useMemo(() => {
-    if (!content) return [];
-    const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return content.vocabulary;
-    return content.vocabulary.filter(
-      (word) =>
-        word.german.toLowerCase().includes(normalizedQuery) ||
-        word.english.toLowerCase().includes(normalizedQuery)
-    );
-  }, [content, query]);
+  const vocabulary = useMemo(
+    () => vocabularyService.getVocabulary(language.id),
+    [language.id]
+  );
 
-  if (!content) {
+  const filteredWords = useMemo(
+    () => vocabularyService.search(language.id, query),
+    [language.id, query]
+  );
+
+  if (vocabulary.length === 0) {
     return (
       <EmptyState
         title={`${language.name} vocabulary is coming soon`}
@@ -47,7 +48,10 @@ export default function VocabularyPage() {
       className="flex flex-col gap-6"
     >
       <div>
-        <h1 className="text-h1 font-bold text-slate-900">Vocabulary</h1>
+        <h1 className="text-h1 font-bold text-slate-900">
+          Vocabulary
+        </h1>
+
         <p className="mt-1 text-body text-slate-600">
           Browse and search {language.name} words by meaning.
         </p>
@@ -57,7 +61,7 @@ export default function VocabularyPage() {
         leftIcon={Search}
         placeholder="Search words..."
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(e) => setQuery(e.target.value)}
         aria-label="Search vocabulary"
         containerClassName="max-w-md"
       />
@@ -67,12 +71,19 @@ export default function VocabularyPage() {
           <Card key={word.id}>
             <Card.Body>
               <div className="flex items-center justify-between">
-                <p className="text-h3 font-semibold text-slate-900">{word.german}</p>
+                <p className="text-h3 font-semibold text-slate-900">
+                  {word.term}
+                </p>
+
                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-caption font-semibold text-primary">
                   {word.level}
                 </span>
               </div>
-              <p className="mt-1 text-body text-slate-600">{word.english}</p>
+
+              <p className="mt-1 text-body text-slate-600">
+                {word.translation}
+              </p>
+
               <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-caption italic text-slate-500">
                 {word.example}
               </p>
