@@ -30,8 +30,10 @@ export const ROUTES = {
   FLASHCARDS: "/flashcards",
   QUIZZES: "/quizzes",
   VOCABULARY: "/vocabulary",
+  VOCABULARY_DETAILS: "/student/vocabulary/:wordId",
 
   NOT_FOUND: "*",
 };
 
 export const buildLessonDetailsPath = (lessonId) => `/lessons/${lessonId}`;
+export const buildVocabularyDetailsPath = (wordId) => `/student/vocabulary/${wordId}`;

@@ -15,6 +15,7 @@ import GrammarPage from "../pages/GrammarPage";
 import FlashcardsPage from "../pages/FlashcardsPage";
 import QuizzesPage from "../pages/QuizzesPage";
 import VocabularyPage from "../pages/VocabularyPage";
+import VocabularyDetailsPage from "../pages/VocabularyDetailsPage";
 import ProfilePage from "../pages/ProfilePage";
 import SettingsPage from "../pages/SettingsPage";
 import Button from "../components/ui/Button";
@@ -144,6 +145,7 @@ export default function AppRoutes() {
           <Route path={ROUTES.FLASHCARDS} element={<FlashcardsPage />} />
           <Route path={ROUTES.QUIZZES} element={<QuizzesPage />} />
           <Route path={ROUTES.VOCABULARY} element={<VocabularyPage />} />
+          <Route path={ROUTES.VOCABULARY_DETAILS} element={<VocabularyDetailsPage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
           <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
         </Route>

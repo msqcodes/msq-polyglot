@@ -11,7 +11,7 @@ import EmptyState from "../components/ui/EmptyState";
 
 import { useLanguage } from "../context/LanguageContext";
 import { vocabularyService } from "../features/vocabulary/services/vocabularyService";
-import { ROUTES } from "../constants/routes";
+import { ROUTES, buildVocabularyDetailsPath } from "../constants/routes";
 
 export default function VocabularyPage() {
   const { language } = useLanguage();
@@ -68,7 +68,19 @@ export default function VocabularyPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredWords.map((word) => (
-          <Card key={word.id}>
+          <Card
+            key={word.id}
+            hoverable
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate(buildVocabularyDetailsPath(word.id))}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                navigate(buildVocabularyDetailsPath(word.id));
+              }
+            }}
+            className="cursor-pointer"
+          >
             <Card.Body>
               <div className="flex items-center justify-between">
                 <p className="text-h3 font-semibold text-slate-900">
